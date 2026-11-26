@@ -79,8 +79,8 @@ export function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="#contact"
-            onClick={() => handleNavClick('contact')}
+            href="/cv.pdf"
+            download="CV-Zaky-Mubarok-Aljauhari.pdf"
             className="inline-flex items-center gap-2 bg-volt text-ink font-semibold text-sm rounded-md px-4 py-2.5 hover:opacity-90 transition-all shadow-volt-glow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-canvas focus:ring-volt"
           >
             <Download className="w-4 h-4 text-ink" />
@@ -135,8 +135,9 @@ export function Navbar() {
             })}
           </nav>
           <a
-            href="#contact"
-            onClick={() => handleNavClick('contact')}
+            href="/cv.pdf"
+            download="CV-Zaky-Mubarok-Aljauhari.pdf"
+            onClick={() => setMobileMenuOpen(false)}
             className="w-full inline-flex items-center justify-center gap-2 bg-volt text-ink font-semibold text-sm rounded-md px-4 py-3 hover:opacity-90 transition-opacity"
           >
             <Download className="w-4 h-4 text-ink" />
