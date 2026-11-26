@@ -1,6 +1,5 @@
 import type { Locale } from '../context/LanguageContext';
 import type {
-  AboutHighlight,
   OwnerProfile,
   ProjectCategory,
   ProjectId,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { About } from './components/About';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { Hero } from './components/Hero';
@@ -17,6 +18,7 @@ export function App() {
         <Navbar />
         <main>
           <Hero />
+          <About />
           <ServicesTools onSelectCategory={setActiveCategory} />
           <Projects
             activeCategory={activeCategory}

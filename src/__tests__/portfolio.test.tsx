@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import App from '../App';
+import { About } from '../components/About';
+import { LanguageProvider } from '../context/LanguageContext';
 import {
   OWNER_PROFILE,
   PROJECTS,
@@ -27,6 +29,18 @@ describe('Portfolio data integrity', () => {
     expect(OWNER_PROFILE.githubUrl).toBe('https://github.com/zkyy-jaki');
     expect(OWNER_PROFILE.linkedinUrl).toContain('zaky-mubarok-aljauhari');
     expect(OWNER_PROFILE.email).toBe('zakymubarok040506@gmail.com');
+  });
+
+  it('provides About section profile data, portrait photo path, and ID/EN translations', () => {
+    const idData = getPortfolioData('id');
+    const enData = getPortfolioData('en');
+
+    expect(idData.ownerProfile.photoUrl).toBe('/pasfoto.jpeg');
+    expect(enData.ownerProfile.photoUrl).toBe('/pasfoto.jpeg');
+    expect(idData.ownerProfile.aboutParagraphs.length).toBeGreaterThanOrEqual(2);
+    expect(enData.ownerProfile.aboutParagraphs.length).toBeGreaterThanOrEqual(2);
+    expect(idData.ownerProfile.aboutHighlights.length).toBeGreaterThanOrEqual(3);
+    expect(enData.ownerProfile.aboutHighlights.length).toBeGreaterThanOrEqual(3);
   });
 
   it('defines the 3 core tech stack categories with all required technologies', () => {
@@ -132,6 +146,53 @@ describe('Portfolio UI interactions', () => {
         screen.getByRole('heading', { name: project.title })
       ).toBeInTheDocument();
     }
+  });
+
+  it('renders About section with pas foto image, accessible alt text, and fallback on image error', () => {
+    render(
+      <LanguageProvider>
+        <About />
+      </LanguageProvider>
+    );
+
+    expect(
+      screen.getByRole('heading', { name: /Tentang Saya/i })
+    ).toBeInTheDocument();
+
+    const photo = screen.getByRole('img', {
+      name: /Pas foto Zaky Mubarok Aljauhari/i,
+    }) as HTMLImageElement;
+    expect(photo).toHaveAttribute('src', '/pasfoto.jpeg');
+
+    fireEvent.error(photo);
+    expect(screen.getByText(/Foto tidak tersedia/i)).toBeInTheDocument();
+  });
+
+  it('renders About section in App and switches About navigation and content between ID and EN', () => {
+    render(<App />);
+
+    expect(screen.getByRole('link', { name: /Tentang/i })).toHaveAttribute(
+      'href',
+      '#about'
+    );
+    expect(
+      screen.getByRole('img', { name: /Pas foto Zaky Mubarok Aljauhari/i })
+    ).toHaveAttribute('src', '/pasfoto.jpeg');
+
+    fireEvent.click(screen.getByRole('button', { name: 'EN' }));
+
+    expect(screen.getByRole('link', { name: /About/i })).toHaveAttribute(
+      'href',
+      '#about'
+    );
+    expect(
+      screen.getByRole('heading', { name: /About Me/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', {
+        name: /Portrait photo of Zaky Mubarok Aljauhari/i,
+      })
+    ).toHaveAttribute('src', '/pasfoto.jpeg');
   });
 
   it('filters projects accurately when switching category tabs', () => {

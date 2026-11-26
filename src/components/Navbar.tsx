@@ -7,9 +7,10 @@ import { useActiveSection } from '../hooks/useActiveSection';
 
 const NAV_ITEMS = [
   { id: 'home', href: '#home', code: '01' },
-  { id: 'services', href: '#services', code: '02' },
-  { id: 'projects', href: '#projects', code: '03' },
-  { id: 'contact', href: '#contact', code: '04' },
+  { id: 'about', href: '#about', code: '02' },
+  { id: 'services', href: '#services', code: '03' },
+  { id: 'projects', href: '#projects', code: '04' },
+  { id: 'contact', href: '#contact', code: '05' },
 ] as const;
 
 const SECTION_IDS = NAV_ITEMS.map((link) => link.id);
