@@ -33,13 +33,13 @@ export function About() {
             transition={{ duration: 0.45 }}
             className="lg:col-span-5 flex justify-center"
           >
-            <div className="relative w-full max-w-[360px]">
+            <div className="relative w-full max-w-[340px]">
               <div
                 aria-hidden="true"
-                className="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-volt/15 via-emerald-500/10 to-sky-500/10 blur-2xl pointer-events-none"
+                className="absolute -inset-3 rounded-full bg-gradient-to-tr from-volt/20 via-emerald-500/10 to-sky-500/10 blur-2xl pointer-events-none"
               />
-              <div className="relative rounded-2xl bg-surface border-2 border-line hover:border-volt/80 transition-colors p-3 shadow-2xl">
-                <div className="px-2 pb-2.5 mb-2.5 border-b border-line flex items-center justify-between text-[11px] font-mono">
+              <div className="relative rounded-3xl bg-surface border-2 border-line hover:border-volt/80 transition-colors p-6 shadow-2xl flex flex-col items-center text-center">
+                <div className="w-full pb-3 mb-5 border-b border-line flex items-center justify-between text-[11px] font-mono">
                   <span className="inline-flex items-center gap-1.5 text-volt">
                     <ShieldCheck className="w-3.5 h-3.5 text-volt" />
                     {t.photoBadge}
@@ -47,34 +47,36 @@ export function About() {
                   <span className="text-muted">UPNVY // IF</span>
                 </div>
 
-                <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-elevated border border-line">
-                  {!photoError ? (
-                    <img
-                      src={ownerProfile.photoUrl}
-                      alt={t.photoAlt}
-                      onError={() => setPhotoError(true)}
-                      className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-[1.02]"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
-                      <div className="w-16 h-16 rounded-full bg-surface border border-volt/50 flex items-center justify-center">
-                        <User className="w-8 h-8 text-volt" />
+                <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full p-1.5 bg-gradient-to-tr from-volt via-volt/40 to-emerald-400/60 shadow-volt-glow-sm">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-elevated border-2 border-canvas">
+                    {!photoError ? (
+                      <img
+                        src={ownerProfile.photoUrl}
+                        alt={t.photoAlt}
+                        onError={() => setPhotoError(true)}
+                        className="w-full h-full rounded-full object-cover object-top transition-transform duration-500 hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-4 text-center">
+                        <div className="w-14 h-14 rounded-full bg-surface border border-volt/50 flex items-center justify-center">
+                          <User className="w-7 h-7 text-volt" />
+                        </div>
+                        <p className="font-mono text-xs text-muted">
+                          {t.photoFallback}
+                        </p>
                       </div>
-                      <p className="font-mono text-xs text-muted">
-                        {t.photoFallback}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/95 via-canvas/70 to-transparent p-4 pt-10">
-                    <p className="text-sm font-bold text-white leading-tight">
-                      {ownerProfile.name}
-                    </p>
-                    <p className="text-[11px] font-mono text-volt mt-0.5 flex items-center gap-1.5">
-                      <MapPin className="w-3 h-3" />
-                      <span>{ownerProfile.location}</span>
-                    </p>
+                    )}
                   </div>
+                </div>
+
+                <div className="mt-5 space-y-1">
+                  <p className="text-base font-bold text-white leading-tight">
+                    {ownerProfile.name}
+                  </p>
+                  <p className="text-xs font-mono text-volt inline-flex items-center justify-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{ownerProfile.location}</span>
+                  </p>
                 </div>
               </div>
             </div>
