@@ -5,6 +5,7 @@ export interface UiTranslations {
   nav: {
     links: {
       home: string;
+      about: string;
       services: string;
       projects: string;
       contact: string;
@@ -15,6 +16,16 @@ export interface UiTranslations {
     openMenuAria: string;
     closeMenuAria: string;
     switcherAria: string;
+  };
+  about: {
+    sectionLabel: string;
+    heading: string;
+    photoBadge: string;
+    photoAlt: string;
+    photoFallback: string;
+    highlightsHeading: string;
+    ctaContact: string;
+    ctaCv: string;
   };
   hero: {
     greeting: string;
@@ -110,6 +121,7 @@ export const UI_TRANSLATIONS: Record<Locale, UiTranslations> = {
     nav: {
       links: {
         home: 'Beranda',
+        about: 'Tentang',
         services: 'Layanan',
         projects: 'Proyek',
         contact: 'Kontak',
@@ -120,6 +132,16 @@ export const UI_TRANSLATIONS: Record<Locale, UiTranslations> = {
       openMenuAria: 'Buka menu navigasi',
       closeMenuAria: 'Tutup menu navigasi',
       switcherAria: 'Pilih bahasa',
+    },
+    about: {
+      sectionLabel: '// PROFIL & LATAR BELAKANG',
+      heading: 'Tentang Saya',
+      photoBadge: 'ID // TERVERIFIKASI',
+      photoAlt: 'Pas foto Zaky Mubarok Aljauhari',
+      photoFallback: 'Foto tidak tersedia',
+      highlightsHeading: '// RINGKASAN PROFIL',
+      ctaContact: 'Diskusi Kolaborasi',
+      ctaCv: 'Unduh CV Lengkap',
     },
     hero: {
       greeting: 'Halo,',
@@ -221,6 +243,7 @@ export const UI_TRANSLATIONS: Record<Locale, UiTranslations> = {
     nav: {
       links: {
         home: 'Home',
+        about: 'About',
         services: 'Services',
         projects: 'Projects',
         contact: 'Contact',
@@ -231,6 +254,16 @@ export const UI_TRANSLATIONS: Record<Locale, UiTranslations> = {
       openMenuAria: 'Open navigation menu',
       closeMenuAria: 'Close navigation menu',
       switcherAria: 'Select language',
+    },
+    about: {
+      sectionLabel: '// PROFILE & BACKGROUND',
+      heading: 'About Me',
+      photoBadge: 'ID // VERIFIED',
+      photoAlt: 'Portrait photo of Zaky Mubarok Aljauhari',
+      photoFallback: 'Photo unavailable',
+      highlightsHeading: '// PROFILE SNAPSHOT',
+      ctaContact: 'Start Collaboration',
+      ctaCv: 'Download Full CV',
     },
     hero: {
       greeting: 'Hello there,',

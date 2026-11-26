@@ -13,6 +13,11 @@ export type ProjectCategory =
 
 export type ServiceId = 'fullstack-web' | 'iot-automation' | 'data-ml';
 
+export interface AboutHighlight {
+  label: string;
+  value: string;
+}
+
 export interface OwnerProfile {
   name: string;
   brand: string;
@@ -21,6 +26,10 @@ export interface OwnerProfile {
   statusText: string;
   bio: string;
   serviceOverview: string;
+  photoUrl: string;
+  location: string;
+  aboutParagraphs: string[];
+  aboutHighlights: AboutHighlight[];
   githubUrl: string;
   linkedinUrl: string;
   email: string;

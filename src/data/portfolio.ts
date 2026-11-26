@@ -1,5 +1,6 @@
 import type { Locale } from '../context/LanguageContext';
 import type {
+  AboutHighlight,
   OwnerProfile,
   ProjectCategory,
   ProjectId,
@@ -11,6 +12,7 @@ import type {
 } from '../types/portfolio';
 
 export type {
+  AboutHighlight,
   OwnerProfile,
   ProjectCategory,
   ProjectId,
@@ -27,6 +29,8 @@ const SHARED_OWNER_BASE = {
   brand: 'ZAKY',
   role: 'Full-Stack Web Developer, Data Analyst, & IoT Enthusiast',
   statusText: 'SYS.ONLINE // AVAILABLE FOR COLLABORATION',
+  photoUrl: '/pasfoto.jpeg',
+  location: 'Yogyakarta, Indonesia',
   githubUrl: 'https://github.com/zkyy-jaki',
   linkedinUrl:
     'https://www.linkedin.com/in/zaky-mubarok-aljauhari-6732b231a/',
@@ -41,6 +45,28 @@ const OWNER_PROFILE_BY_LOCALE: Record<Locale, OwnerProfile> = {
     bio: 'Mahasiswa S1 Informatika di Universitas Pembangunan Nasional "Veteran" Yogyakarta yang berfokus pada pengembangan aplikasi Full-Stack Web, analisis data berbasis metodologi CRISP-DM, serta sistem terintegrasi IoT & otomasi server. Membangun solusi end-to-end mulai dari firmware mikrokontroler ESP32 dan backend terstruktur hingga web dashboard real-time yang presisi.',
     serviceOverview:
       'Pendekatan engineering end-to-end yang menjembatani perangkat keras (ESP32 & jaringan sensor), backend berkinerja tinggi (Express.js, Laravel, Python, SQL/Prisma), analisis prediktif berbasis CRISP-DM, hingga antarmuka pengguna modern yang responsif dan terukur.',
+    aboutParagraphs: [
+      'Saya Zaky Mubarok Aljauhari, mahasiswa S1 Informatika di Universitas Pembangunan Nasional "Veteran" Yogyakarta (UPNVY) yang memiliki ketertarikan mendalam pada arsitektur perangkat lunak end-to-end. Perjalanan teknis saya dimulai dari keingintahuan bagaimana perangkat keras fisik berkomunikasi dengan layanan cloud hingga dapat divisualisasikan secara real-time di peramban web.',
+      'Dalam setiap proyek, saya menggabungkan tiga pilar utama: pengembangan aplikasi Full-Stack Web modern (React, Next.js, TypeScript, Express.js, Laravel), rekayasa sistem IoT & otomasi server Linux VPS (ESP32, MQTT, Socket.IO, systemd), serta analisis data & pemodelan prediktif terstruktur berbasis metodologi CRISP-DM.',
+    ],
+    aboutHighlights: [
+      {
+        label: 'PENDIDIKAN',
+        value: 'S1 Informatika — UPN "Veteran" Yogyakarta',
+      },
+      {
+        label: 'FOKUS UTAMA',
+        value: 'Full-Stack Web, IoT Telemetry & CRISP-DM Data Science',
+      },
+      {
+        label: 'DOMISILI',
+        value: 'Yogyakarta, Indonesia',
+      },
+      {
+        label: 'STATUS KOLABORASI',
+        value: 'Terbuka untuk Proyek, Riset & Magang',
+      },
+    ],
   },
   en: {
     ...SHARED_OWNER_BASE,
@@ -49,6 +75,28 @@ const OWNER_PROFILE_BY_LOCALE: Record<Locale, OwnerProfile> = {
     bio: 'Undergraduate Informatics student at Universitas Pembangunan Nasional "Veteran" Yogyakarta specializing in Full-Stack Web application development, CRISP-DM data analysis, and integrated IoT & server automation systems. Building end-to-end solutions from ESP32 microcontroller firmware and structured backends to precision real-time web dashboards.',
     serviceOverview:
       'An end-to-end engineering approach bridging hardware (ESP32 & sensor networks), high-performance backends (Express.js, Laravel, Python, SQL/Prisma), CRISP-DM predictive analytics, and responsive, measurable modern user interfaces.',
+    aboutParagraphs: [
+      'I am Zaky Mubarok Aljauhari, an undergraduate Informatics student at Universitas Pembangunan Nasional "Veteran" Yogyakarta (UPNVY) driven by end-to-end software architecture. My engineering journey is rooted in bridging physical sensor hardware with cloud backends and responsive, real-time web interfaces.',
+      'Across my work, I integrate three core pillars: modern Full-Stack Web development (React, Next.js, TypeScript, Express.js, Laravel), IoT telemetry & Linux VPS automation (ESP32, MQTT, Socket.IO, systemd), and structured predictive data analytics using the industry-standard CRISP-DM methodology.',
+    ],
+    aboutHighlights: [
+      {
+        label: 'EDUCATION',
+        value: 'B.Sc. in Informatics — UPN "Veteran" Yogyakarta',
+      },
+      {
+        label: 'CORE FOCUS',
+        value: 'Full-Stack Web, IoT Telemetry & CRISP-DM Data Science',
+      },
+      {
+        label: 'LOCATION',
+        value: 'Yogyakarta, Indonesia',
+      },
+      {
+        label: 'COLLABORATION',
+        value: 'Open for Projects, Research & Internships',
+      },
+    ],
   },
 };
 
