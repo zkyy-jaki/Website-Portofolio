@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import App from '../App';
 import { About } from '../components/About';
 import { LanguageProvider } from '../context/LanguageContext';
@@ -281,14 +281,7 @@ describe('Portfolio UI interactions', () => {
     ).toBeInTheDocument();
   });
 
-  it('submits valid Contact form data via direct email API and provides a pre-filled mailto link', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-      new Response(JSON.stringify({ success: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    );
-
+  it('launches pre-filled mailto link with name, email, and message when submitting valid Contact form', () => {
     render(<App />);
 
     fireEvent.change(screen.getByLabelText('Nama'), {
@@ -305,26 +298,14 @@ describe('Portfolio UI interactions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Kirim Pesan/i }));
 
-    await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledTimes(1);
-    });
-
-    const [calledUrl, calledInit] = fetchSpy.mock.calls[0];
-    expect(String(calledUrl)).toMatch(/formsubmit\.co|web3forms\.com/);
-    expect(calledInit?.method).toBe('POST');
-    expect(String(calledInit?.body)).toContain('Budi Recruiter');
-    expect(String(calledInit?.body)).toContain('budi@company.com');
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('link', { name: /Buka Email/i })
-      ).toHaveAttribute(
-        'href',
-        expect.stringContaining('mailto:zakymubarok040506@gmail.com?subject=')
-      );
-    });
-
-    fetchSpy.mockRestore();
+    const openMailLink = screen.getByRole('link', { name: /Buka Email/i });
+    const href = openMailLink.getAttribute('href') ?? '';
+    expect(href).toContain('mailto:zakymubarok040506@gmail.com?subject=');
+    expect(decodeURIComponent(href)).toContain('Budi Recruiter');
+    expect(decodeURIComponent(href)).toContain('budi@company.com');
+    expect(decodeURIComponent(href)).toContain(
+      'Halo Zaky, kami tertarik mengundang Anda wawancara Full-Stack.'
+    );
   });
 
   it('switches the entire UI consistently between ID and EN using the Navbar language switcher', () => {

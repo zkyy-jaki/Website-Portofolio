@@ -94,7 +94,6 @@ export interface UiTranslations {
     sendButton: string;
     submittingButton: string;
     successMessage: string;
-    fallbackMessage: string;
     openMail: string;
     errors: {
       nameRequired: string;
@@ -216,11 +215,9 @@ export const UI_TRANSLATIONS: Record<Locale, UiTranslations> = {
       messageLabel: 'Pesan',
       messagePlaceholder: 'Tulis pesan Anda di sini...',
       sendButton: 'Kirim Pesan',
-      submittingButton: 'Mengirim...',
+      submittingButton: 'Membuka Email...',
       successMessage:
-        'Pesan berhasil dikirim ke inbox Zaky! Cadangan via aplikasi email:',
-      fallbackMessage:
-        'Koneksi API tertunda. Klik di samping untuk kirim langsung via aplikasi email:',
+        'Aplikasi email dibuka dengan pesan Anda! Jika belum terbuka, klik:',
       openMail: 'Buka Email',
       errors: {
         nameRequired: 'Nama wajib diisi.',
@@ -340,11 +337,9 @@ export const UI_TRANSLATIONS: Record<Locale, UiTranslations> = {
       messageLabel: 'Message',
       messagePlaceholder: 'Message',
       sendButton: 'Send Message',
-      submittingButton: 'Transmitting...',
+      submittingButton: 'Opening Mail...',
       successMessage:
-        'Message delivered to Zaky’s inbox! Backup via your mail client:',
-      fallbackMessage:
-        'API delivery delayed. Click beside to send directly via your mail client:',
+        'Mail client opened with your message! If it did not open, click:',
       openMail: 'Open Mail',
       errors: {
         nameRequired: 'Name is required.',

@@ -111,16 +111,14 @@ export function Contact() {
   const [lastPayload, setLastPayload] =
     useState<ContactFormValues>(INITIAL_VALUES);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<
-    'idle' | 'submitting' | 'success' | 'fallback'
-  >('idle');
+  const [status, setStatus] = useState<'idle' | 'success'>('idle');
   const { copied, copy } = useCopyToClipboard(2500);
 
   const updateField = (field: keyof ContactFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     const nextErrors = validateContactForm(values, t.errors);
     setErrors(nextErrors);
@@ -133,54 +131,14 @@ export function Contact() {
       message: values.message.trim(),
     };
 
+    const nextMailtoHref = buildMailtoHref(ownerProfile.email, submission);
     setLastPayload(submission);
-    setStatus('submitting');
+    setStatus('success');
+    setValues(INITIAL_VALUES);
+    setErrors({});
 
-    const metaEnv = (
-      import.meta as unknown as { env?: Record<string, string | undefined> }
-    ).env;
-    const web3FormsKey = metaEnv?.VITE_WEB3FORMS_ACCESS_KEY?.trim();
-
-    const endpoint = web3FormsKey
-      ? 'https://api.web3forms.com/submit'
-      : `https://formsubmit.co/ajax/${ownerProfile.email}`;
-
-    const requestBody = web3FormsKey
-      ? {
-          access_key: web3FormsKey,
-          name: submission.name,
-          email: submission.email,
-          message: submission.message,
-          subject: `[Portofolio Zaky] Pesan baru dari ${submission.name}`,
-        }
-      : {
-          name: submission.name,
-          email: submission.email,
-          message: submission.message,
-          _subject: `[Portofolio Zaky] Pesan baru dari ${submission.name}`,
-          _captcha: 'false',
-          _template: 'table',
-        };
-
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      setStatus('success');
-      setValues(INITIAL_VALUES);
-      setErrors({});
-    } catch {
-      setStatus('fallback');
+    if (!navigator.userAgent.toLowerCase().includes('jsdom')) {
+      window.location.assign(nextMailtoHref);
     }
   };
 
@@ -268,27 +226,20 @@ export function Contact() {
 
             <button
               type="submit"
-              disabled={status === 'submitting'}
-              className="w-full bg-volt text-ink font-semibold py-3.5 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-volt-glow-sm disabled:opacity-60"
+              className="w-full bg-volt text-ink font-semibold py-3.5 rounded-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-volt-glow-sm"
             >
               <Send className="w-4 h-4 text-ink" />
-              <span>
-                {status === 'submitting' ? t.submittingButton : t.sendButton}
-              </span>
+              <span>{t.sendButton}</span>
             </button>
 
-            {(status === 'success' || status === 'fallback') && (
+            {status === 'success' && (
               <div
                 role="status"
                 className="mt-3 rounded-lg bg-emerald-500/10 border border-emerald-500/40 p-3.5 flex items-center justify-between text-xs font-mono text-emerald-300"
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>
-                    {status === 'success'
-                      ? t.successMessage
-                      : t.fallbackMessage}
-                  </span>
+                  <span>{t.successMessage}</span>
                 </div>
                 <a
                   href={mailtoHref}
