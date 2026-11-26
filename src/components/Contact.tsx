@@ -51,6 +51,27 @@ function validateContactForm(
   return errors;
 }
 
+function buildMailtoHref(
+  recipientEmail: string,
+  payload: ContactFormValues
+): string {
+  const name = payload.name.trim();
+  const senderEmail = payload.email.trim();
+  const message = payload.message.trim();
+
+  if (!name && !senderEmail && !message) {
+    return `mailto:${recipientEmail}`;
+  }
+
+  const subject = encodeURIComponent(
+    `[Portofolio] Pesan dari ${name || senderEmail}`
+  );
+  const body = encodeURIComponent(
+    `Nama: ${name}\nEmail: ${senderEmail}\n\nPesan:\n${message}`
+  );
+  return `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+}
+
 interface FormFieldProps {
   id: string;
   label: string;
@@ -87,30 +108,83 @@ export function Contact() {
   const t = UI_TRANSLATIONS[locale].contact;
 
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
+  const [lastPayload, setLastPayload] =
+    useState<ContactFormValues>(INITIAL_VALUES);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>(
-    'idle'
-  );
+  const [status, setStatus] = useState<
+    'idle' | 'submitting' | 'success' | 'fallback'
+  >('idle');
   const { copied, copy } = useCopyToClipboard(2500);
 
   const updateField = (field: keyof ContactFormValues, value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const nextErrors = validateContactForm(values, t.errors);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) return;
 
+    const submission: ContactFormValues = {
+      name: values.name.trim(),
+      email: values.email.trim(),
+      message: values.message.trim(),
+    };
+
+    setLastPayload(submission);
     setStatus('submitting');
-    window.setTimeout(() => {
+
+    const metaEnv = (
+      import.meta as unknown as { env?: Record<string, string | undefined> }
+    ).env;
+    const web3FormsKey = metaEnv?.VITE_WEB3FORMS_ACCESS_KEY?.trim();
+
+    const endpoint = web3FormsKey
+      ? 'https://api.web3forms.com/submit'
+      : `https://formsubmit.co/ajax/${ownerProfile.email}`;
+
+    const requestBody = web3FormsKey
+      ? {
+          access_key: web3FormsKey,
+          name: submission.name,
+          email: submission.email,
+          message: submission.message,
+          subject: `[Portofolio Zaky] Pesan baru dari ${submission.name}`,
+        }
+      : {
+          name: submission.name,
+          email: submission.email,
+          message: submission.message,
+          _subject: `[Portofolio Zaky] Pesan baru dari ${submission.name}`,
+          _captcha: 'false',
+          _template: 'table',
+        };
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
       setStatus('success');
       setValues(INITIAL_VALUES);
       setErrors({});
-    }, 250);
+    } catch {
+      setStatus('fallback');
+    }
   };
+
+  const mailtoHref = buildMailtoHref(ownerProfile.email, lastPayload);
 
   return (
     <section id="contact" className="py-20 md:py-28">
@@ -203,17 +277,21 @@ export function Contact() {
               </span>
             </button>
 
-            {status === 'success' && (
+            {(status === 'success' || status === 'fallback') && (
               <div
                 role="status"
                 className="mt-3 rounded-lg bg-emerald-500/10 border border-emerald-500/40 p-3.5 flex items-center justify-between text-xs font-mono text-emerald-300"
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>{t.successMessage}</span>
+                  <span>
+                    {status === 'success'
+                      ? t.successMessage
+                      : t.fallbackMessage}
+                  </span>
                 </div>
                 <a
-                  href={`mailto:${ownerProfile.email}`}
+                  href={mailtoHref}
                   className="underline text-volt ml-2 shrink-0"
                 >
                   {t.openMail}
