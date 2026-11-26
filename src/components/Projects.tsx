@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Layers, Terminal } from 'lucide-react';
-import { OWNER_PROFILE, PROJECTS } from '../data/portfolio';
+import { useLanguage } from '../context/LanguageContext';
+import { getPortfolioData } from '../data/portfolio';
+import { UI_TRANSLATIONS } from '../data/translations';
 import type { ProjectCategory, ProjectItem } from '../types/portfolio';
 import { ProjectSpecModal } from './ProjectSpecModal';
 import { ProjectTelemetryPreview } from './ProjectTelemetryPreview';
@@ -19,14 +21,21 @@ interface ProjectsProps {
 }
 
 export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
-  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(
-    null
-  );
+  const { locale } = useLanguage();
+  const { ownerProfile, projects } = getPortfolioData(locale);
+  const t = UI_TRANSLATIONS[locale].projects;
+
+  const [selectedProjectId, setSelectedProjectId] = useState<
+    ProjectItem['id'] | null
+  >(null);
+
+  const selectedProject =
+    projects.find((project) => project.id === selectedProjectId) ?? null;
 
   const filteredProjects =
     activeCategory === 'All'
-      ? PROJECTS
-      : PROJECTS.filter((project) =>
+      ? projects
+      : projects.filter((project) =>
           project.categories.includes(activeCategory)
         );
 
@@ -36,17 +45,17 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <span className="font-mono text-xs text-volt tracking-wider block">
-              // TELEMETRY ARCHIVE ({filteredProjects.length} OF{' '}
-              {PROJECTS.length} SYSTEMS)
+              {t.archivePrefix} ({filteredProjects.length} {t.ofWord}{' '}
+              {projects.length} {t.systemsWord})
             </span>
             <h2 className="text-3xl md:text-4xl font-semibold text-white">
-              Projects
+              {t.heading}
             </h2>
           </div>
 
           <div
             role="tablist"
-            aria-label="Filter projects by engineering category"
+            aria-label={t.filterAria}
             className="flex flex-wrap items-center gap-2"
           >
             {FILTER_TABS.map((tab) => {
@@ -64,7 +73,7 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
                       : 'bg-surface text-white border border-line hover:border-volt/60'
                   }`}
                 >
-                  {tab}
+                  {t.categoryLabels[tab]}
                 </button>
               );
             })}
@@ -138,7 +147,7 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 bg-volt text-ink font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-md hover:opacity-90 transition-opacity shadow-volt-glow-sm"
                       >
-                        <span>{project.liveLabel ?? 'Live Demo'}</span>
+                        <span>{project.liveLabel ?? t.liveDemoFallback}</span>
                         <ExternalLink className="w-4 h-4 text-ink" />
                       </a>
                     )}
@@ -151,13 +160,13 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
                         className="inline-flex items-center gap-2 bg-surface text-white border border-line hover:border-volt font-medium text-xs sm:text-sm px-4 py-2.5 rounded-md transition-colors"
                       >
                         <Github className="w-4 h-4 text-volt" />
-                        <span>GitHub Repo</span>
+                        <span>{t.githubRepo}</span>
                       </a>
                     )}
 
                     <button
                       type="button"
-                      onClick={() => setSelectedProject(project)}
+                      onClick={() => setSelectedProjectId(project.id)}
                       className={`inline-flex items-center gap-2 font-medium text-xs sm:text-sm px-4 py-2.5 rounded-md transition-colors ${
                         hasExternalLinks
                           ? 'bg-canvas text-muted hover:text-white border border-line hover:border-volt'
@@ -165,7 +174,7 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
                       }`}
                     >
                       <Layers className="w-4 h-4" />
-                      <span>Architecture Spec</span>
+                      <span>{t.architectureSpec}</span>
                     </button>
                   </div>
                 </div>
@@ -173,7 +182,7 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
                 <div className="lg:col-span-7">
                   <ProjectTelemetryPreview
                     project={project}
-                    onInspect={setSelectedProject}
+                    onInspect={(item) => setSelectedProjectId(item.id)}
                   />
                 </div>
               </motion.article>
@@ -185,25 +194,23 @@ export function Projects({ activeCategory, onCategoryChange }: ProjectsProps) {
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-volt shrink-0" />
             <span>
-              All {PROJECTS.length} systems above represent verified engineering
-              builds across IoT, Full-Stack Web, Computer Vision, Cloud Bots
-              &amp; CRISP-DM.
+              {t.footerSummaryPrefix} {projects.length} {t.footerSummarySuffix}
             </span>
           </div>
           <a
-            href={OWNER_PROFILE.githubUrl}
+            href={ownerProfile.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-volt hover:underline shrink-0"
           >
-            View All Repositories →
+            {t.viewAllRepos}
           </a>
         </div>
       </div>
 
       <ProjectSpecModal
         project={selectedProject}
-        onClose={() => setSelectedProject(null)}
+        onClose={() => setSelectedProjectId(null)}
       />
     </section>
   );

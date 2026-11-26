@@ -7,31 +7,37 @@ import {
   Mail,
   TerminalSquare,
 } from 'lucide-react';
-import { OWNER_PROFILE } from '../data/portfolio';
+import { OWNER_PROFILE, getPortfolioData } from '../data/portfolio';
+import { useLanguage } from '../context/LanguageContext';
+import { UI_TRANSLATIONS } from '../data/translations';
 import { StackedPhotoCard } from './StackedPhotoCard';
 
-const SOCIAL_LINKS = [
-  {
-    href: OWNER_PROFILE.githubUrl,
-    label: 'GitHub Profile Zaky Mubarok Aljauhari',
-    Icon: Github,
-    external: true,
-  },
-  {
-    href: OWNER_PROFILE.linkedinUrl,
-    label: 'LinkedIn Profile Zaky Mubarok Aljauhari',
-    Icon: Linkedin,
-    external: true,
-  },
-  {
-    href: `mailto:${OWNER_PROFILE.email}`,
-    label: 'Email Zaky Mubarok Aljauhari',
-    Icon: Mail,
-    external: false,
-  },
-] as const;
-
 export function Hero() {
+  const { locale } = useLanguage();
+  const { ownerProfile } = getPortfolioData(locale);
+  const t = UI_TRANSLATIONS[locale].hero;
+
+  const socialLinks = [
+    {
+      href: OWNER_PROFILE.githubUrl,
+      label: `${t.githubLabelPrefix} ${ownerProfile.name}`,
+      Icon: Github,
+      external: true,
+    },
+    {
+      href: OWNER_PROFILE.linkedinUrl,
+      label: `${t.linkedinLabelPrefix} ${ownerProfile.name}`,
+      Icon: Linkedin,
+      external: true,
+    },
+    {
+      href: `mailto:${OWNER_PROFILE.email}`,
+      label: `${t.emailLabelPrefix} ${ownerProfile.name}`,
+      Icon: Mail,
+      external: false,
+    },
+  ] as const;
+
   return (
     <section
       id="home"
@@ -47,17 +53,17 @@ export function Hero() {
           >
             <div className="inline-flex flex-wrap items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-line text-xs font-mono text-muted">
               <GraduationCap className="w-4 h-4 text-volt" />
-              <span>{OWNER_PROFILE.affiliation}</span>
+              <span>{ownerProfile.affiliation}</span>
             </div>
 
             <div className="space-y-2">
               <p className="text-xl md:text-2xl font-medium text-white">
-                Hello there,
+                {t.greeting}
               </p>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight text-white">
-                My name is{' '}
+                {t.introPrefix}{' '}
                 <span className="text-volt underline decoration-volt decoration-2 underline-offset-8">
-                  {OWNER_PROFILE.name}.
+                  {ownerProfile.name}.
                 </span>
               </h1>
             </div>
@@ -65,12 +71,12 @@ export function Hero() {
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-volt text-ink font-mono text-xs font-semibold">
                 <TerminalSquare className="w-3.5 h-3.5 text-ink" />
-                {OWNER_PROFILE.role}
+                {ownerProfile.role}
               </span>
             </div>
 
             <p className="text-sm md:text-base text-muted leading-relaxed max-w-2xl">
-              {OWNER_PROFILE.bio}
+              {ownerProfile.bio}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-1">
@@ -78,11 +84,11 @@ export function Hero() {
                 href="#projects"
                 className="inline-flex items-center gap-2 bg-volt text-ink font-semibold text-sm px-5 py-3 rounded-md hover:opacity-90 transition-opacity shadow-volt-glow-sm"
               >
-                <span>Explore Featured Projects</span>
+                <span>{t.exploreProjects}</span>
                 <ArrowUpRight className="w-4 h-4 text-ink" />
               </a>
               <a
-                href={OWNER_PROFILE.githubUrl}
+                href={ownerProfile.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-surface text-white border border-line hover:border-volt font-medium text-sm px-5 py-3 rounded-md transition-colors"
@@ -94,10 +100,10 @@ export function Hero() {
 
             <div className="pt-4 space-y-3">
               <p className="text-xs md:text-sm text-muted font-medium">
-                Let&apos;s connect with me at:
+                {t.connectPrompt}
               </p>
               <div className="flex items-center gap-3">
-                {SOCIAL_LINKS.map(({ href, label, Icon, external }) => (
+                {socialLinks.map(({ href, label, Icon, external }) => (
                   <a
                     key={label}
                     href={href}
@@ -110,7 +116,7 @@ export function Hero() {
                   </a>
                 ))}
                 <span className="hidden sm:inline-block pl-2 font-mono text-xs text-muted">
-                  {OWNER_PROFILE.email}
+                  {ownerProfile.email}
                 </span>
               </div>
             </div>

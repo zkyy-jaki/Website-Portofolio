@@ -11,7 +11,9 @@ import {
   ShieldCheck,
   Terminal,
 } from 'lucide-react';
-import { OWNER_PROFILE, PROJECTS } from '../data/portfolio';
+import { useLanguage } from '../context/LanguageContext';
+import { getPortfolioData } from '../data/portfolio';
+import { UI_TRANSLATIONS } from '../data/translations';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 const CAPABILITY_CHIPS = [
@@ -21,6 +23,9 @@ const CAPABILITY_CHIPS = [
 ] as const;
 
 export function StackedPhotoCard() {
+  const { locale } = useLanguage();
+  const { ownerProfile, projects } = getPortfolioData(locale);
+  const t = UI_TRANSLATIONS[locale].stackedCard;
   const [pinged, setPinged] = useState(false);
   const [pingCount, setPingCount] = useState(128);
   const { copied, copy } = useCopyToClipboard();
@@ -96,7 +101,7 @@ export function StackedPhotoCard() {
         <div className="relative aspect-[4/4] w-full bg-canvas overflow-hidden flex flex-col justify-between p-4 bg-telemetry-grid">
           <div className="relative z-10 flex items-center justify-between text-[10px] font-mono">
             <span className="px-2 py-1 rounded bg-canvas/85 border border-line text-muted">
-              {PROJECTS.length} FEATURED SYS
+              {projects.length} {t.featuredSys}
             </span>
             <span className="px-2 py-1 rounded bg-canvas/85 border border-line text-volt">
               ESP32 // NEXT.JS
@@ -119,7 +124,7 @@ export function StackedPhotoCard() {
               <div>
                 <span className="text-emerald-400">$ whoami</span>
                 <p className="text-white font-semibold mt-0.5">
-                  {OWNER_PROFILE.name}
+                  {ownerProfile.name}
                 </p>
               </div>
               <div className="space-y-0.5 text-[10px]">
@@ -129,11 +134,11 @@ export function StackedPhotoCard() {
                 </div>
                 <div>
                   <span className="text-muted">degree: </span>
-                  <span className="text-white">S1 Informatika UPNVY</span>
+                  <span className="text-white">{t.degree}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-muted">status: </span>
-                  <span className="text-emerald-400">READY_TO_BUILD</span>
+                  <span className="text-emerald-400">OPEN TO WORK</span>
                   <span
                     aria-hidden="true"
                     className="inline-block w-1.5 h-3.5 bg-volt animate-pulse ml-0.5"
@@ -162,11 +167,7 @@ export function StackedPhotoCard() {
               <button
                 type="button"
                 onClick={handleTogglePing}
-                aria-label={
-                  pinged
-                    ? 'Remove telemetry endorsements'
-                    : 'Endorse telemetry profile'
-                }
+                aria-label={pinged ? t.removeEndorseAria : t.endorseAria}
                 className={`inline-flex items-center gap-1.5 text-xs font-mono transition-colors focus:outline-none ${
                   pinged ? 'text-red-500' : 'text-muted hover:text-white'
                 }`}
@@ -181,7 +182,7 @@ export function StackedPhotoCard() {
 
               <a
                 href="#contact"
-                aria-label="Jump to contact form"
+                aria-label={t.jumpContactAria}
                 className="inline-flex items-center gap-1 text-muted hover:text-white transition-colors"
               >
                 <MessageSquare className="w-5 h-5" />
@@ -189,8 +190,8 @@ export function StackedPhotoCard() {
 
               <button
                 type="button"
-                onClick={() => copy(OWNER_PROFILE.githubUrl)}
-                aria-label="Copy GitHub profile link"
+                onClick={() => copy(ownerProfile.githubUrl)}
+                aria-label={t.copyGithubAria}
                 className="inline-flex items-center gap-1 text-muted hover:text-volt transition-colors"
               >
                 {copied ? (
@@ -202,7 +203,7 @@ export function StackedPhotoCard() {
             </div>
 
             <span className="text-[11px] font-mono text-muted">
-              {copied ? 'GitHub URL Copied!' : 'You can call me Zaky!'}
+              {copied ? t.githubCopied : t.callMe}
             </span>
           </div>
         </div>

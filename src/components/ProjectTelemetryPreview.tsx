@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { ExternalLink, Layers } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { UI_TRANSLATIONS } from '../data/translations';
 import type { ProjectItem } from '../types/portfolio';
 import { PROJECT_PREVIEWS } from './previews';
 
@@ -12,6 +14,8 @@ export function ProjectTelemetryPreview({
   project,
   onInspect,
 }: ProjectTelemetryPreviewProps) {
+  const { locale } = useLanguage();
+  const t = UI_TRANSLATIONS[locale].projects;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -39,11 +43,11 @@ export function ProjectTelemetryPreview({
         <button
           type="button"
           onClick={() => onInspect(project)}
-          aria-label={`Inspect technical architecture for ${project.title}`}
+          aria-label={`${t.inspectAriaPrefix} ${project.title}`}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-canvas/90 hover:bg-volt text-white hover:text-ink border border-line hover:border-volt font-mono text-[11px] font-medium transition-all shadow-lg"
         >
           <Layers className="w-3.5 h-3.5" />
-          <span>Inspect Spec</span>
+          <span>{t.inspectSpec}</span>
         </button>
 
         {project.liveUrl && (
@@ -51,7 +55,7 @@ export function ProjectTelemetryPreview({
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Open live deployment for ${project.title}`}
+            aria-label={`${t.openLiveAriaPrefix} ${project.title}`}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-volt text-ink font-mono text-[11px] font-semibold hover:opacity-90 transition-opacity shadow-lg"
           >
             <span>{project.liveUrl.replace('https://', '')}</span>

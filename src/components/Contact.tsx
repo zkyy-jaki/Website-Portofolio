@@ -7,7 +7,9 @@ import {
   Mail,
   Send,
 } from 'lucide-react';
-import { OWNER_PROFILE } from '../data/portfolio';
+import { useLanguage } from '../context/LanguageContext';
+import { getPortfolioData } from '../data/portfolio';
+import { UI_TRANSLATIONS, type UiTranslations } from '../data/translations';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 interface ContactFormValues {
@@ -26,21 +28,24 @@ const INITIAL_VALUES: ContactFormValues = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function validateContactForm(values: ContactFormValues): FormErrors {
+function validateContactForm(
+  values: ContactFormValues,
+  messages: UiTranslations['contact']['errors']
+): FormErrors {
   const errors: FormErrors = {};
 
   if (!values.name.trim()) {
-    errors.name = 'Name is required.';
+    errors.name = messages.nameRequired;
   }
   if (!values.email.trim()) {
-    errors.email = 'Email is required.';
+    errors.email = messages.emailRequired;
   } else if (!EMAIL_PATTERN.test(values.email.trim())) {
-    errors.email = 'Please enter a valid email address.';
+    errors.email = messages.emailInvalid;
   }
   if (!values.message.trim()) {
-    errors.message = 'Message is required.';
+    errors.message = messages.messageRequired;
   } else if (values.message.trim().length < 10) {
-    errors.message = 'Message must be at least 10 characters.';
+    errors.message = messages.messageMinLength;
   }
 
   return errors;
@@ -77,6 +82,10 @@ const INPUT_CLASS =
   'w-full rounded-lg bg-canvas border border-line focus:border-volt px-4 py-3 text-sm text-white placeholder-muted/50 focus:outline-none transition-colors';
 
 export function Contact() {
+  const { locale } = useLanguage();
+  const { ownerProfile } = getPortfolioData(locale);
+  const t = UI_TRANSLATIONS[locale].contact;
+
   const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>(
@@ -90,7 +99,7 @@ export function Contact() {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const nextErrors = validateContactForm(values);
+    const nextErrors = validateContactForm(values, t.errors);
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length > 0) return;
@@ -109,26 +118,22 @@ export function Contact() {
         <div className="max-w-[600px] mx-auto space-y-8">
           <div className="text-center space-y-3">
             <span className="font-mono text-xs text-volt tracking-wider">
-              // DIRECT COMMUNICATION TERMINAL
+              {t.terminalLabel}
             </span>
             <h2 className="text-3xl md:text-4xl font-semibold text-white">
-              Get in touch
+              {t.heading}
             </h2>
-            <p className="text-sm md:text-base text-muted">
-              Interested in collaborating on Full-Stack Web applications, IoT
-              telemetry systems, or Data Analysis projects? Send a message below
-              or reach out directly via email.
-            </p>
+            <p className="text-sm md:text-base text-muted">{t.subtitle}</p>
 
             <div className="pt-2 flex justify-center">
               <button
                 type="button"
-                onClick={() => copy(OWNER_PROFILE.email)}
-                aria-label={`Copy email address ${OWNER_PROFILE.email}`}
+                onClick={() => copy(ownerProfile.email)}
+                aria-label={`${t.copyEmailAriaPrefix} ${ownerProfile.email}`}
                 className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface border border-line hover:border-volt text-xs font-mono text-muted hover:text-white transition-colors"
               >
                 <Mail className="w-3.5 h-3.5 text-volt" />
-                <span>{OWNER_PROFILE.email}</span>
+                <span>{ownerProfile.email}</span>
                 {copied ? (
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
                 ) : (
@@ -143,24 +148,28 @@ export function Contact() {
             noValidate
             className="space-y-4 rounded-2xl bg-surface/60 border border-line p-6 sm:p-8 shadow-xl"
           >
-            <FormField id="contact-name" label="Name" error={errors.name}>
+            <FormField id="contact-name" label={t.nameLabel} error={errors.name}>
               <input
                 id="contact-name"
                 name="name"
                 type="text"
-                placeholder="Name"
+                placeholder={t.namePlaceholder}
                 value={values.name}
                 onChange={(e) => updateField('name', e.target.value)}
                 className={INPUT_CLASS}
               />
             </FormField>
 
-            <FormField id="contact-email" label="Email" error={errors.email}>
+            <FormField
+              id="contact-email"
+              label={t.emailLabel}
+              error={errors.email}
+            >
               <input
                 id="contact-email"
                 name="email"
                 type="email"
-                placeholder="Email"
+                placeholder={t.emailPlaceholder}
                 value={values.email}
                 onChange={(e) => updateField('email', e.target.value)}
                 className={INPUT_CLASS}
@@ -169,14 +178,14 @@ export function Contact() {
 
             <FormField
               id="contact-message"
-              label="Message"
+              label={t.messageLabel}
               error={errors.message}
             >
               <textarea
                 id="contact-message"
                 name="message"
                 rows={4}
-                placeholder="Message"
+                placeholder={t.messagePlaceholder}
                 value={values.message}
                 onChange={(e) => updateField('message', e.target.value)}
                 className={`${INPUT_CLASS} resize-y`}
@@ -190,7 +199,7 @@ export function Contact() {
             >
               <Send className="w-4 h-4 text-ink" />
               <span>
-                {status === 'submitting' ? 'Transmitting...' : 'Send Message'}
+                {status === 'submitting' ? t.submittingButton : t.sendButton}
               </span>
             </button>
 
@@ -201,16 +210,13 @@ export function Contact() {
               >
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>
-                    Message ready! You can also launch your mail client
-                    directly:
-                  </span>
+                  <span>{t.successMessage}</span>
                 </div>
                 <a
-                  href={`mailto:${OWNER_PROFILE.email}`}
+                  href={`mailto:${ownerProfile.email}`}
                   className="underline text-volt ml-2 shrink-0"
                 >
-                  Open Mail
+                  {t.openMail}
                 </a>
               </div>
             )}

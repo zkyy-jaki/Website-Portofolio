@@ -1,12 +1,9 @@
 import type { KeyboardEvent } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Database, Layers, Radio } from 'lucide-react';
-import {
-  OWNER_PROFILE,
-  PROJECTS,
-  SERVICE_ITEMS,
-  TECH_STACK_CATEGORIES,
-} from '../data/portfolio';
+import { useLanguage } from '../context/LanguageContext';
+import { getPortfolioData } from '../data/portfolio';
+import { UI_TRANSLATIONS } from '../data/translations';
 import type { ProjectCategory, TechStackCategory } from '../types/portfolio';
 import { ServiceThumbnail } from './ServiceThumbnail';
 
@@ -21,6 +18,11 @@ const CATEGORY_ICONS: Record<TechStackCategory['id'], JSX.Element> = {
 };
 
 export function ServicesTools({ onSelectCategory }: ServicesToolsProps) {
+  const { locale } = useLanguage();
+  const { ownerProfile, projects, serviceItems, techStackCategories } =
+    getPortfolioData(locale);
+  const t = UI_TRANSLATIONS[locale].services;
+
   const handleSelectService = (category: ProjectCategory) => {
     onSelectCategory?.(category);
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -43,14 +45,14 @@ export function ServicesTools({ onSelectCategory }: ServicesToolsProps) {
           <div className="lg:col-span-6 space-y-5">
             <div className="flex items-center justify-between mb-2">
               <span className="font-mono text-xs text-volt tracking-wider">
-                // CORE CAPABILITIES
+                {t.coreCapabilities}
               </span>
               <span className="font-mono text-xs text-muted">
-                {PROJECTS.length} VERIFIED BUILDS
+                {projects.length} {t.verifiedBuilds}
               </span>
             </div>
 
-            {SERVICE_ITEMS.map((service, index) => (
+            {serviceItems.map((service, index) => (
               <motion.div
                 key={service.id}
                 initial={{ opacity: 0, y: 16 }}
@@ -61,7 +63,7 @@ export function ServicesTools({ onSelectCategory }: ServicesToolsProps) {
                 onKeyDown={(e) => handleCardKeyDown(e, service.filterTarget)}
                 role="button"
                 tabIndex={0}
-                aria-label={`Filter projects by ${service.title}`}
+                aria-label={`${t.filterByAriaPrefix} ${service.title}`}
                 className="group cursor-pointer rounded-xl bg-surface border border-line hover:border-volt p-4 transition-all flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-lg"
               >
                 <ServiceThumbnail serviceId={service.id} />
@@ -92,25 +94,25 @@ export function ServicesTools({ onSelectCategory }: ServicesToolsProps) {
           <div className="lg:col-span-6 space-y-8">
             <div className="space-y-3">
               <h2 className="text-3xl md:text-4xl font-semibold text-white">
-                Service
+                {t.serviceHeading}
               </h2>
               <p className="text-sm md:text-base text-muted leading-relaxed">
-                {OWNER_PROFILE.serviceOverview}
+                {ownerProfile.serviceOverview}
               </p>
             </div>
 
             <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl md:text-3xl font-semibold text-white">
-                  Tools &amp; Tech Stack
+                  {t.toolsHeading}
                 </h2>
                 <span className="font-mono text-xs text-volt bg-surface border border-line px-2.5 py-1 rounded">
-                  {TECH_STACK_CATEGORIES.length} DOMAINS
+                  {techStackCategories.length} {t.domainsLabel}
                 </span>
               </div>
 
               <div className="space-y-4">
-                {TECH_STACK_CATEGORIES.map((category) => (
+                {techStackCategories.map((category) => (
                   <div
                     key={category.id}
                     className="rounded-xl bg-surface border border-line p-4 space-y-3"

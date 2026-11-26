@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import App from '../App';
 import {
@@ -6,7 +6,13 @@ import {
   PROJECTS,
   SERVICE_ITEMS,
   TECH_STACK_CATEGORIES,
+  getPortfolioData,
 } from '../data/portfolio';
+
+beforeEach(() => {
+  window.localStorage.clear();
+  document.documentElement.lang = 'id';
+});
 
 describe('Portfolio data integrity', () => {
   it('contains authentic owner profile information for Zaky Mubarok Aljauhari', () => {
@@ -63,9 +69,16 @@ describe('Portfolio data integrity', () => {
     );
   });
 
-  it('defines the 3 service cards aligned with Zaky engineering focus', () => {
+  it('defines the 3 service cards aligned with Zaky engineering focus in both ID and EN', () => {
     expect(SERVICE_ITEMS).toHaveLength(3);
     expect(SERVICE_ITEMS.map((s) => s.title)).toEqual([
+      'Pengembangan Web Full-Stack',
+      'Sistem IoT & Otomasi',
+      'Analisis Data & Machine Learning',
+    ]);
+
+    const enData = getPortfolioData('en');
+    expect(enData.serviceItems.map((s) => s.title)).toEqual([
       'Full-Stack Web Development',
       'IoT & Automation Systems',
       'Data Analysis & Machine Learning',
@@ -101,11 +114,11 @@ describe('Portfolio data integrity', () => {
 });
 
 describe('Portfolio UI interactions', () => {
-  it('renders Hero section with authentic name, affiliation, and all 5 featured projects initially', () => {
+  it('renders Hero section in Indonesian by default with authentic name, affiliation, and all 5 featured projects', () => {
     render(<App />);
 
     expect(
-      screen.getByRole('heading', { name: /My name is Zaky Mubarok Aljauhari/i })
+      screen.getByRole('heading', { name: /Saya Zaky Mubarok Aljauhari/i })
     ).toBeInTheDocument();
 
     expect(
@@ -121,7 +134,7 @@ describe('Portfolio UI interactions', () => {
     }
   });
 
-  it('filters projects accurately when switching category tabs (All, Web & Security, IoT & Automation, Data & ML)', () => {
+  it('filters projects accurately when switching category tabs', () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole('tab', { name: 'Data & ML' }));
@@ -137,7 +150,7 @@ describe('Portfolio UI interactions', () => {
       })
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: 'IoT & Automation' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'IoT & Otomasi' }));
 
     expect(
       screen.getByRole('heading', {
@@ -155,7 +168,7 @@ describe('Portfolio UI interactions', () => {
       })
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: 'All' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Semua' }));
     expect(screen.getAllByRole('article')).toHaveLength(5);
   });
 
@@ -163,18 +176,18 @@ describe('Portfolio UI interactions', () => {
     render(<App />);
 
     const specButtons = screen.getAllByRole('button', {
-      name: /Architecture Spec/i,
+      name: /Spesifikasi Arsitektur/i,
     });
     expect(specButtons.length).toBeGreaterThanOrEqual(5);
 
     fireEvent.click(specButtons[0]);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(
-      screen.getByText(/Engineering Architecture & Highlights/i)
+      screen.getByText(/Arsitektur Teknis & Poin Utama/i)
     ).toBeInTheDocument();
 
     fireEvent.click(
-      screen.getByRole('button', { name: /Close architecture modal/i })
+      screen.getByRole('button', { name: /Tutup modal spesifikasi arsitektur/i })
     );
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
@@ -182,28 +195,62 @@ describe('Portfolio UI interactions', () => {
   it('validates empty and invalid inputs on the Contact form before submitting', () => {
     render(<App />);
 
-    const submitButton = screen.getByRole('button', { name: /Send Message/i });
+    const submitButton = screen.getByRole('button', { name: /Kirim Pesan/i });
     fireEvent.click(submitButton);
 
-    expect(screen.getByText('Name is required.')).toBeInTheDocument();
-    expect(screen.getByText('Email is required.')).toBeInTheDocument();
-    expect(screen.getByText('Message is required.')).toBeInTheDocument();
+    expect(screen.getByText('Nama wajib diisi.')).toBeInTheDocument();
+    expect(screen.getByText('Email wajib diisi.')).toBeInTheDocument();
+    expect(screen.getByText('Pesan wajib diisi.')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText('Name'), {
+    fireEvent.change(screen.getByLabelText('Nama'), {
       target: { value: 'Recruiter' },
     });
     fireEvent.change(screen.getByLabelText('Email'), {
       target: { value: 'invalid-email' },
     });
-    fireEvent.change(screen.getByLabelText('Message'), {
+    fireEvent.change(screen.getByLabelText('Pesan'), {
       target: {
-        value: 'Hello Zaky, let us discuss an IoT and Full-Stack role!',
+        value: 'Halo Zaky, mari diskusikan proyek IoT dan Full-Stack!',
       },
     });
 
     fireEvent.click(submitButton);
     expect(
-      screen.getByText('Please enter a valid email address.')
+      screen.getByText('Masukkan alamat email yang valid.')
     ).toBeInTheDocument();
+  });
+
+  it('switches the entire UI consistently between ID and EN using the Navbar language switcher', () => {
+    render(<App />);
+
+    expect(document.documentElement.lang).toBe('id');
+    expect(screen.getByText('Unduh CV')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'EN' }));
+
+    expect(document.documentElement.lang).toBe('en');
+    expect(
+      screen.getByRole('heading', { name: /My name is Zaky Mubarok Aljauhari/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Undergraduate Informatics Student, Universitas Pembangunan Nasional "Veteran" Yogyakarta/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText('Download CV')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Send Message/i })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Send Message/i }));
+    expect(screen.getByText('Name is required.')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'ID' }));
+
+    expect(document.documentElement.lang).toBe('id');
+    expect(
+      screen.getByRole('heading', { name: /Saya Zaky Mubarok Aljauhari/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Unduh CV')).toBeInTheDocument();
   });
 });

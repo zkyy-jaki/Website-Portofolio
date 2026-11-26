@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { CheckCircle2, ExternalLink, Github, Terminal, X } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { UI_TRANSLATIONS } from '../data/translations';
 import type { ProjectItem } from '../types/portfolio';
 
 interface ProjectSpecModalProps {
@@ -8,6 +10,9 @@ interface ProjectSpecModalProps {
 }
 
 export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
+  const { locale } = useLanguage();
+  const t = UI_TRANSLATIONS[locale].modal;
+
   useEffect(() => {
     if (!project) return;
 
@@ -36,12 +41,14 @@ export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
         <div className="px-6 py-4 bg-canvas border-b border-line flex items-center justify-between">
           <div className="flex items-center gap-2 font-mono text-xs text-volt">
             <Terminal className="w-4 h-4" />
-            <span>{project.indexCode} // ARCHITECTURE SPEC</span>
+            <span>
+              {project.indexCode} {t.headerSuffix}
+            </span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close architecture modal"
+            aria-label={t.closeAria}
             className="p-1.5 rounded-lg bg-surface border border-line hover:border-volt text-muted hover:text-white transition-colors"
           >
             <X className="w-4 h-4" />
@@ -82,7 +89,7 @@ export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
 
           <div className="space-y-2.5">
             <h4 className="font-mono text-xs text-volt uppercase tracking-wider">
-              // Engineering Architecture &amp; Highlights
+              {t.highlightsHeading}
             </h4>
             <ul className="space-y-2">
               {project.highlights.map((item) => (
@@ -99,7 +106,7 @@ export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
 
           <div className="space-y-2">
             <h4 className="font-mono text-xs text-muted uppercase tracking-wider">
-              // Verified Stack
+              {t.verifiedStackHeading}
             </h4>
             <div className="flex flex-wrap gap-2">
               {project.techStack.map((tech) => (
@@ -123,7 +130,7 @@ export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-volt text-ink font-semibold text-xs sm:text-sm px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
               >
-                <span>{project.liveLabel ?? 'Live Demo'}</span>
+                <span>{project.liveLabel ?? t.liveDemoFallback}</span>
                 <ExternalLink className="w-4 h-4 text-ink" />
               </a>
             )}
@@ -135,7 +142,7 @@ export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
                 className="inline-flex items-center gap-2 bg-surface text-white border border-line hover:border-volt font-medium text-xs sm:text-sm px-4 py-2 rounded-md transition-colors"
               >
                 <Github className="w-4 h-4 text-volt" />
-                <span>GitHub Repository</span>
+                <span>{t.githubRepo}</span>
               </a>
             )}
           </div>
@@ -145,7 +152,7 @@ export function ProjectSpecModal({ project, onClose }: ProjectSpecModalProps) {
             onClick={onClose}
             className="text-xs font-mono text-muted hover:text-white px-3 py-1.5"
           >
-            [ESC to close]
+            {t.escToClose}
           </button>
         </div>
       </div>
